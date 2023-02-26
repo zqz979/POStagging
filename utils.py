@@ -82,6 +82,24 @@ def embedding(input_dir,output_dir):
                     output_file.write(f'{pos_tag}\n')
         print(f'{file_name} vectorized.')
 
+# Convert data to feature vectors
+def feature_extractor(sentence, i):
+    word = sentence[i]['word']
+    features = {
+        'word': word,
+        'word[-3:]': word[-3:],
+        'word[-2:]': word[-2:],
+        'word[-1:]': word[-1:],
+        'word[:3]': word[:3],
+        'word[:2]': word[:2],
+        'word[:1]': word[:1],
+        'word.isupper()': word.isupper(),
+        'word.istitle()': word.istitle(),
+        'word.isdigit()': word.isdigit(),
+        'prev_word': '' if i == 0 else sentence[i-1]['word'],
+        'next_word': '' if i == len(sentence)-1 else sentence[i+1]['word'],
+    }
+    return features
 
 def main():
     # clean_data('./data/', './tagonly/')
