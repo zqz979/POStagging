@@ -2,7 +2,7 @@ from utils import *
 from nltk.tag import HiddenMarkovModelTrainer, HiddenMarkovModelTagger
 from sklearn.model_selection import train_test_split
 def preprocess():
-    train_sents=load_data('./tagonly/train.txt')
+    train_sents=load_data('./data/train.txt', 'tuple')
     train_sents, test_sents = train_test_split(train_sents, test_size=0.2)
     return train_sents, test_sents
 
@@ -23,6 +23,7 @@ def test_model(model,test_sents):
 
 def main():
     train_sents, test_sents = preprocess()
+    print(train_sents[0])
     test_model(train_model(train_sents),test_sents)
 
 if __name__ == "__main__":

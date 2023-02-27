@@ -2,61 +2,29 @@ import os
 import nltk
 import gensim.downloader as api
 
-def clean_data(input_dir, output_dir):
-    for file_name in os.listdir(input_dir):
-        input_path = os.path.join(input_dir, file_name)
-        output_path = os.path.join(output_dir, file_name)
-        with open(input_path, 'r') as input_file, open(output_path, 'w') as output_file:
-            for line in input_file:
-                line = line.strip()
-                if not line:
-                    output_file.write('\n')  # write empty lines as they are
-                else:
-                    fields = line.split()
-                    word = fields[0]
-                    pos_tag = fields[1]
-                    output_file.write(f'{word} {pos_tag}\n')
-        print(f'{file_name} cleaned.')
-
-def load_data(file_path):
-    with open(file_path, 'r') as f:
-        data = f.read().strip()
-    sents = data.split('\n\n')
-    return [[nltk.tag.str2tuple(wordtag,sep=" ") for wordtag in sent.split('\n')] for sent in sents]
-
-# generate files with features as columns
-# we can modify this function for generating more meaningful features
-def generate_feature_file(input_file, output_file):
-    with open(input_file, "r") as f:
-        lines = f.readlines()
-
-    with open(output_file, "w") as f:
-        for i, line in enumerate(lines):
-            if line.strip():
-                word, tag = line.split()
-                features = []
-                # Add word suffix as a feature
-                features.append(word[-3:])
-                # Add word prefix as a feature
-                features.append(word[:3])
-                # Add word length as a feature
-                features.append(str(len(word)))
-                # Add tag of the previous word as a feature
-                if i > 0 and lines[i-1].strip():
-                    prev_word, prev_tag = lines[i-1].split()
-                    features.append(prev_tag)
-                else: # start symbol
-                    features.append('<s>')
-                # Add tag of the next word as a feature
-                if i < len(lines)-1 and lines[i+1].strip():
-                    next_word, next_tag = lines[i+1].split()
-                    features.append(next_tag)
-                else: # end symbol
-                    features.append('<e>')
-                f.write(f"{word} {' '.join(features)} {tag}\n")
+# returns data which contains a list of sentences, 
+# option to load as list of dictionaries or tuple
+# e.g. {'word': 'in', 'pos_tag': 'IN'} or ('in', 'IN')
+def load_data(filename, format):
+    # use to store the list of sentences
+    data = []
+    with open(filename, 'r') as f:
+        sentence = []
+        for line in f:
+            line = line.strip()
+            if not line:  # empty line indicates end of sentence
+                data.append(sentence)
+                sentence = []
             else:
-                f.write("\n")
-    print(f'features generated for {input_file}.')
+                # last column is ignore
+                word, pos_tag, _ = line.split()
+                if (format == 'dictionary'):
+                    sentence.append({'word': word, 'pos_tag': pos_tag})
+                if (format == 'tuple'):
+                    sentence.append((word,pos_tag))
+        if sentence:
+            data.append(sentence)
+    return data
 
 # generate files of format {embedding tag} for each word. Each scalar in vector is a separate column
 def embedding(input_dir,output_dir):
@@ -82,24 +50,40 @@ def embedding(input_dir,output_dir):
                     output_file.write(f'{pos_tag}\n')
         print(f'{file_name} vectorized.')
 
-# Convert data to feature vectors
+# Get features for each sentence
 def feature_extractor(sentence, i):
     word = sentence[i]['word']
     features = {
+        # word itself
         'word': word,
-        'word[-3:]': word[-3:],
-        'word[-2:]': word[-2:],
-        'word[-1:]': word[-1:],
-        'word[:3]': word[:3],
-        'word[:2]': word[:2],
-        'word[:1]': word[:1],
+        # suffixes
+        'suffix1': word[-3:],
+        'suffix2': word[-2:],
+        'suffix3': word[-1:],
+        # prefixes
+        'prefix1': word[:3],
+        'prefix2': word[:2],
+        'prefix3': word[:1],
+        # All-cap word can be proper nouns or abbreviations
         'word.isupper()': word.isupper(),
+        # Capitalized words can be beginning of sentences, proper nouns, and acronyms.
         'word.istitle()': word.istitle(),
+        # if the word is a number
         'word.isdigit()': word.isdigit(),
-        'prev_word': '' if i == 0 else sentence[i-1]['word'],
-        'next_word': '' if i == len(sentence)-1 else sentence[i+1]['word'],
+        # tag of previous word
+        'prev_tag': '<s>' if i == 0 else sentence[i-1]['pos_tag'],
+        # tag of next word
+        'next_tag': '<e>' if i == len(sentence)-1 else sentence[i+1]['pos_tag'],
     }
     return features
+
+# get features for entire data
+def extract_features(sentences):
+    return [[feature_extractor(sentence, i) for i in range(len(sentence))] for sentence in sentences]
+
+# get labels for each training data
+def extract_labels(sentences):
+    return [[token['pos_tag'] for token in sentence] for sentence in sentences]
 
 def main():
     # clean_data('./data/', './tagonly/')
