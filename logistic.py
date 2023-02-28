@@ -18,7 +18,10 @@ def main():
     # Vectorize features
     # converting the features to numerical vectors
     vectorizer = DictVectorizer()
-    X_train_vec = vectorizer.fit_transform([feature for sentence in X_train for feature in sentence])
+    t1=[feature for sentence in X_train for feature in sentence]
+    t1.extend([feature for sentence in X_test for feature in sentence])
+    vectorizer = vectorizer.fit(t1)
+    X_train_vec = vectorizer.transform([feature for sentence in X_train for feature in sentence])
     # vectorizer already fit
     X_test_vec = vectorizer.transform([feature for sentence in X_test for feature in sentence])
 
