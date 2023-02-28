@@ -50,12 +50,18 @@ def embedding(input_dir,output_dir):
                     output_file.write(f'{pos_tag}\n')
         print(f'{file_name} vectorized.')
 
+glob_model = api.load("glove-twitter-25")
+def word2emb(word):
+    try:
+        word = glob_model.get_vector(word)
+    except:
+        word = glob_model.get_vector('unk')
+    return word
+
 # Get features for each sentence
 def feature_extractor(sentence, i):
     word = sentence[i]['word']
     features = {
-        # word itself
-        'word': word,
         # suffixes
         'suffix1': word[-3:],
         'suffix2': word[-2:],
@@ -75,6 +81,8 @@ def feature_extractor(sentence, i):
         # tag of next word
         'next_tag': '<e>' if i == len(sentence)-1 else sentence[i+1]['pos_tag'],
     }
+    for i,v in enumerate(word2emb(word)):
+        features[f'{i}']=v
     return features
 
 # get features for entire data

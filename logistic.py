@@ -4,7 +4,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction import DictVectorizer
 from utils import *
 
-
 def main():
 
     train_data = load_data('./data/train.txt','dictionary')
