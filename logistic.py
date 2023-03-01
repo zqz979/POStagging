@@ -26,7 +26,7 @@ def main():
 
     
     # Train model
-    clf = LogisticRegression(max_iter=1000)
+    clf = LogisticRegression(max_iter=10000)
     clf.fit(X_train_vec, [label for sentence in y_train for label in sentence])
 
     # Test model
@@ -37,8 +37,7 @@ def main():
     print("Accuracy: {:.2f}%".format(accuracy * 100))
 
     save_model(clf,"logistic.pth")
-    with open("./models/vectorizer.sav", 'wb') as file:
-        pickle.dump(vectorizer, file)
+    save_model(vectorizer,"vectorizer.sav")
 
 if __name__ == "__main__":
     main()
