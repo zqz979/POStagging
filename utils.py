@@ -106,24 +106,24 @@ def feature_extractor(sentence, i):
     for w,word in enumerate([curr_word,prev_word,next_word]):
         features.update({
             # suffixes
-            'suffix1': word[-3:],
-            'suffix2': word[-2:],
-            'suffix3': word[-1:],
+            f'{w}_suffix1': word[-3:],
+            f'{w}_suffix2': word[-2:],
+            f'{w}_suffix3': word[-1:],
             # prefixes
-            'prefix1': word[:3],
-            'prefix2': word[:2],
-            'prefix3': word[:1],
+            f'{w}_prefix1': word[:3],
+            f'{w}_prefix2': word[:2],
+            f'{w}_prefix3': word[:1],
             # All-cap word can be proper nouns or abbreviations
-            'word.isupper()': word.isupper(),
+            f'{w}_word.isupper()': word.isupper(),
             # Capitalized words can be beginning of sentences, proper nouns, and acronyms.
-            'word.istitle()': word.istitle(),
+            f'{w}_word.istitle()': word.istitle(),
             # if the word is a number
-            'word.isdigit()': word.isdigit(),
-            'punc': is_punc(word),
-            'len': len(word),
-            'end': i==len(sentence)-1,
-            'start':i==0,
-            'ind':i
+            f'{w}_word.isdigit()': word.isdigit(),
+            f'{w}_punc': is_punc(word),
+            f'{w}_len': len(word),
+            f'{w}_end': i==len(sentence)-1,
+            f'{w}_start':i==0,
+            f'{w}_ind':i
         })
         for i,v in enumerate(word2emb(word)):
             features[f'{w}_{i}']=v
