@@ -36,5 +36,9 @@ def main():
     accuracy = accuracy_score([label for sentence in y_test for label in sentence], y_pred)
     print("Accuracy: {:.2f}%".format(accuracy * 100))
 
+    save_model(clf,"logistic.pth")
+    with open("./models/vectorizer.sav", 'wb') as file:
+        pickle.dump(vectorizer, file)
+
 if __name__ == "__main__":
     main()
