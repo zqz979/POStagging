@@ -1,11 +1,10 @@
-import pickle
 import utils
 
-best_model="best_logistic.pth"
-vectorizer="best_vectorizer.sav"
+best_model="mlp.pth"
+vectorizer="vectorizer.sav"
 data_format="dictionary"
 input_path="./infer/test.txt"
-output_path="./tmp_POS.test.txt"
+output_path="./POS.test.txt"
 
 test_data=utils.load_data(input_path,data_format,True)
 X_test=utils.extract_features(test_data)
