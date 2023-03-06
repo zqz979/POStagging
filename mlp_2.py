@@ -1,5 +1,7 @@
 from sklearn.neural_network import MLPClassifier
 from sklearn.feature_extraction import DictVectorizer
+from sklearn.preprocessing import StandardScaler
+from scipy.sparse import vstack
 from sklearn.metrics import accuracy_score
 from utils import *
 from matplotlib import pyplot as plt
@@ -20,8 +22,12 @@ X_train_vec = vectorizer.transform(
     [feature for sentence in X_train for feature in sentence])
 X_test_vec = vectorizer.transform(
     [feature for sentence in X_test for feature in sentence])
+scaler=StandardScaler()
+scaler=scaler.fit(vstack([X_test_vec,X_train_vec]))
+X_train_vec=scaler.transform(X_train_vec)
+X_test_vec=scaler.transform(X_test_vec)
 
-clf = MLPClassifier(hidden_layer_sizes=(10), max_iter=10, verbose=True)
+clf = MLPClassifier(hidden_layer_sizes=(10,), max_iter=10, verbose=True)
 clf.fit(X_train_vec, [label for sentence in y_train for label in sentence])
 
 # Test model
@@ -35,3 +41,4 @@ print("Accuracy: {:.2f}%".format(accuracy * 100))
 
 save_model(clf, "mlp.pth")
 save_model(vectorizer, "vectorizer.sav")
+save_model(scaler, "scaler.sav")
