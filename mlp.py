@@ -6,8 +6,8 @@ from utils import *
 import joblib
 from matplotlib import pyplot as plt
 
-train_set = load_data('./data/train.txt','dictionary')
-test_set = load_data('./data/test.txt','dictionary')
+train_data = load_data('./data/train.txt','dictionary')
+train_set, test_set = train_test_split(train_data, test_size=0.2)
 
 X_train = extract_features(train_set)
 y_train = extract_labels(train_set)
@@ -23,7 +23,6 @@ vectorizer = joblib.load('./models/best_vectorizer.sav')
 X_train_vec = vectorizer.transform([feature for sentence in X_train for feature in sentence])
 # vectorizer already fit
 X_test_vec = vectorizer.transform([feature for sentence in X_test for feature in sentence])
-# shape is (211727, 28268)
 # Train model
 # 
 # clf = joblib.load('./models/mlp_10_1000.pth')

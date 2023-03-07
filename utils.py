@@ -13,7 +13,7 @@ GLOVE_AVG_MISS_VEC_300 = np.array(GLOVE_AVG_MISS_STRING_300.split(" "))
 # e.g. {'word': 'in', 'pos_tag': 'IN'} or ('in', 'IN')
 
 
-def load_data(filename, format, infer=False):
+def load_data(filename, format):
     # use to store the list of sentences
     data = []
     with open(filename, 'r') as f:
@@ -24,21 +24,16 @@ def load_data(filename, format, infer=False):
                 data.append(sentence)
                 sentence = []
             else:
-                # last column is ignore
-                if (infer):
-                    fields = line.split()
-                    word = fields[0]
-                    pos_tag = ""
-                else:
-                    word, pos_tag, _ = line.split()
+                fields = line.split()
+                if(len(fields)<2):
+                    fields=(fields[0],"")
                 if (format == 'dictionary'):
-                    sentence.append({'word': word, 'pos_tag': pos_tag})
+                    sentence.append({'word': fields[0], 'pos_tag': fields[1]})
                 if (format == 'tuple'):
-                    sentence.append((word, pos_tag))
+                    sentence.append((fields[0],fields[1]))
         if sentence:
             data.append(sentence)
     return data
-
 
 def write_infer(filename, inputs, preds):
     with open(filename, 'w') as f:
@@ -230,7 +225,6 @@ def extract_labels(sentences):
 def main():
     # clean_data('./data/', './tagonly/')
     # generate_feature_file('./tagonly/train.txt', './features/train.txt')
-    # generate_feature_file('./tagonly/test.txt', './features/test.txt')
     # embedding('./tagonly/','./embedding/')
     pass
 

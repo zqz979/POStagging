@@ -8,7 +8,6 @@ def main():
 
     train_data = load_data('./data/train.txt','dictionary')
     train_set, test_set = train_test_split(train_data, test_size=0.2)
-    # training the model using entire train.txt and evaluate model on the actual test.txt, the accuracy is about 97%
     X_train = extract_features(train_set)
     y_train = extract_labels(train_set)
     X_test = extract_features(test_set)
@@ -35,9 +34,6 @@ def main():
     # Evaluate model
     accuracy = accuracy_score([label for sentence in y_test for label in sentence], y_pred)
     print("Accuracy: {:.2f}%".format(accuracy * 100))
-
-    save_model(clf,"logistic.pth")
-    save_model(vectorizer,"vectorizer.sav")
 
 if __name__ == "__main__":
     main()
