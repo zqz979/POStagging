@@ -102,6 +102,8 @@ for sentence in test_sents:
     for word, tag in sentence:
         if word in wordnum_dir:
             term2.append([wordnum_dir[word]])
+        else:
+            term2.append([c_sen_word])
     if term2 != []:
         test_words.append(term2)
 
@@ -116,8 +118,7 @@ for sentence in test_words:
 y_test = []
 for sentence in test_sents:
     for word, tag in sentence:
-        if word in wordnum_dir:
-            y_test.append(tagnum_dir[tag])
+        y_test.append(tagnum_dir[tag])
 for keylist in key_predict:
     for val in keylist:
         y_eval.append(val)
